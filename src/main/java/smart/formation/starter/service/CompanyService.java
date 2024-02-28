@@ -1,5 +1,6 @@
 package smart.formation.starter.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,13 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import smart.formation.starter.dao.CompanyRepository;
+import smart.formation.starter.dao.ServerRepository;
+import smart.formation.starter.dto.CompanyServer;
 import smart.formation.starter.entity.Company;
+import smart.formation.starter.entity.Server;
 
 @Service
 public class CompanyService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private ServerRepository serverRepository;
 
     public ResponseEntity<Object> createCompany(Company company){
         try {
@@ -65,4 +72,21 @@ public class CompanyService {
 
     }
 
+    public ResponseEntity<Object> getServers(Long id){
+        Optional<Company> optionalCompany = companyRepository.findById(id);
+
+        if(optionalCompany.isPresent()){
+            var company = optionalCompany.get();
+
+            List<Server> servers = serverRepository.findByCompany(company);
+            int totalServers = servers.size();
+
+            var companyServer = new CompanyServer(servers, totalServers);
+
+            return ResponseEntity.ok().body(companyServer);
+        }
+
+        return ResponseEntity.notFound().build();
+
+    }
 }

@@ -48,4 +48,10 @@ public class CompanyController {
         return service.findComapnyByName(name);
 
     }
+
+    @GetMapping("/{id}/servers")
+    public ResponseEntity<Object> getServers(@PathVariable Long id) {
+        return service.getServers(id);
+    }
+    
 }
